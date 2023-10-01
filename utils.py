@@ -1,25 +1,41 @@
 import cv2
 import os
+import face_recognition
 
-def extractFaces(path):
-    imagesPath = f"{path}/images"
+PATH = "assets"
+FACE_CLASSIF = cv2.CascadeClassifier("assets/data/haarcascades/haarcascade_frontalface_default.xml")
 
-    if not os.path.exists(f"{path}/faces"):
-        os.makedirs(f"{path}/faces")
+def extractFaces():
+    imagesPath = f"{PATH}/images"
+
+    if not os.path.exists(f"{PATH}/faces"):
+        os.makedirs(f"{PATH}/faces")
         print("New folder: assets/faces")
-
-    faceClassif = cv2.CascadeClassifier("assets/data/haarcascades/haarcascade_frontalface_default.xml")
 
     count = 0
     for imageName in os.listdir(imagesPath):
         print(imageName)
         image = cv2.imread(imagesPath + "/" + imageName)
-        faces = faceClassif.detectMultiScale(image, 1.02, 5)
+        faces = FACE_CLASSIF.detectMultiScale(image, 1.02, 5)
         for (x, y, w ,h) in faces:
             face = image[y:y + h, x:x + w]
             face = cv2.resize(face, (150, 150))
             print(count)
-            cv2.imwrite(path + "/faces/" + str(count) + ".jpg", face)
+            cv2.imwrite(PATH + "/faces/" + str(count) + ".jpg", face)
             count += 1
+        os.remove(imagesPath + "/" + imageName)
 
-    cv2.destroyAllWindows()
+def faceRecognition():
+    imageFacesPath = f"{PATH}/faces"
+
+    facesEncodings = []
+    facesNames = []
+    for file_name in os.listdir(imageFacesPath):
+        image = cv2.imread(imageFacesPath + "/" + file_name)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        f_coding = face_recognition.face_encodings(image, known_face_locations=[(0, 150, 150, 0)])[0]
+        facesEncodings.append(f_coding)
+        facesNames.append(file_name.split(".")[0])
+    
+    return (facesEncodings, facesNames)
