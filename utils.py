@@ -6,6 +6,11 @@ PATH = "assets"
 FACE_CLASSIF = cv2.CascadeClassifier("assets/data/haarcascades/haarcascade_frontalface_default.xml")
 
 def extractFaces():
+    """
+    The function `extractFaces` takes images from a specified directory, detects faces in each image
+    using a face classifier, crops and resizes the detected faces, saves them in a new directory, and
+    finally deletes the original images.
+    """
     imagesPath = f"{PATH}/images"
 
     if not os.path.exists(f"{PATH}/faces"):
@@ -26,6 +31,12 @@ def extractFaces():
         os.remove(imagesPath + "/" + imageName)
 
 def faceRecognition():
+    """
+    The function `faceRecognition` reads images from a specified directory, encodes the faces in the
+    images using face_recognition library, and returns the face encodings and corresponding file names.
+    :return: The function `faceRecognition` returns a tuple containing two lists: `facesEncodings` and
+    `facesNames`.
+    """
     imageFacesPath = f"{PATH}/faces"
 
     facesEncodings = []
